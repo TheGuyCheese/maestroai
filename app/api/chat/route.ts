@@ -3,7 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import { createServerSupabaseClient } from "@/lib/supabase";
 import { chatSystemPrompt } from "@/lib/prompts";
 import { getGeminiStreamResult, isGeminiBusy } from "@/lib/gemini";
-import type { ChatMessage, FullContext } from "@/types";
+import type { ChatMessage, FullContext, MasterContext, InstrumentAnalysis, TeachingSummary } from "@/types";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -39,9 +39,9 @@ export async function POST(req: NextRequest) {
 
     // ── Resolve context — from DB (preferred) or inline fullContext (fallback) ─
 
-    let mc:       Record<string, any> = {};
-    let ts:       Record<string, any> | null = null;
-    let ia:       Record<string, any> = {};
+    let mc:       Partial<MasterContext> = {};
+    let ts:       TeachingSummary | null = null;
+    let ia:       Record<string, InstrumentAnalysis> = {};
     let history:  ChatMessage[] = [];
     let fileName  = "sheet";
     let saveToDb  = false;
@@ -64,9 +64,9 @@ export async function POST(req: NextRequest) {
         });
       }
 
-      mc       = session.master_context        ?? {};
-      ts       = session.teaching_summary      ?? null;
-      ia       = session.instrument_analyses   ?? {};
+      mc       = (session.master_context        ?? {}) as Partial<MasterContext>;
+      ts       = (session.teaching_summary      ?? null) as TeachingSummary | null;
+      ia       = (session.instrument_analyses   ?? {}) as Record<string, InstrumentAnalysis>;
       history  = session.conversation_history  ?? [];
       fileName = session.file_name;
       saveToDb = true;
@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
       ts       = fullContext.teachingSummary               ?? null;
       ia       = fullContext.instrumentAnalyses            ?? {};
       history  = fullContext.conversationHistory           ?? [];
-      fileName = (fullContext as any).fileName             ?? "sheet";
+      fileName = fullContext.fileName                      ?? "sheet";
       saveToDb = false; // no session row to update
 
     } else {
@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
     // ── Build context summary (server-side only — never sent to client) ───────
 
     const analysesSummary = Object.entries(ia)
-      .map(([inst, a]: [string, any]) =>
+      .map(([inst, a]: [string, InstrumentAnalysis]) =>
         `${inst.toUpperCase()}:\n` +
         `- Technical difficulty: ${a.technicalDifficulty}\n` +
         `- Key techniques: ${a.keyTechniques?.join("; ")}\n` +
