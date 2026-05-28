@@ -1,0 +1,76 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background: #0e0e0e;
+  color: #e5e2e1;
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Staff texture — faint horizontal music lines */
+.staff-texture {
+  background-image: repeating-linear-gradient(
+    transparent,
+    transparent 24px,
+    rgba(255, 255, 255, 0.025) 24px,
+    rgba(255, 255, 255, 0.025) 25px
+  );
+}
+
+/* Amber glow utilities */
+.glow-amber {
+  box-shadow: 0 0 30px rgba(245, 158, 11, 0.15);
+}
+.glow-amber-strong {
+  box-shadow: 0 0 40px rgba(245, 158, 11, 0.3);
+}
+
+/* Dashed amber pipeline connector */
+.pipeline-line {
+  border-left: 2px dashed rgba(245, 158, 11, 0.35);
+}
+
+/* Upload zone hover glow */
+.upload-glow:hover {
+  box-shadow: 0 0 60px rgba(245, 158, 11, 0.1),
+              inset 0 0 40px rgba(245, 158, 11, 0.04);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #1c1b1b; }
+::-webkit-scrollbar-thumb { background: #534434; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #f59e0b; }
+
+/* Material Symbols baseline alignment */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+@layer utilities {
+  .font-playfair { font-family: 'Playfair Display', serif; }
+  .font-inter    { font-family: 'Inter', sans-serif; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeIn {
+  animation: fadeIn 0.35s ease-out forwards;
+}
