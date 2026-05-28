@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Logo from "@/components/Logo";
@@ -9,7 +9,16 @@ import ChatPanel from "@/components/ChatPanel";
 import { useApp } from "@/lib/context";
 import type { SessionRow } from "@/types";
 
+// useSearchParams() requires a Suspense boundary in Next.js 14 App Router
 export default function TeachPage() {
+  return (
+    <Suspense>
+      <TeachPageInner />
+    </Suspense>
+  );
+}
+
+function TeachPageInner() {
   const { state, dispatch } = useApp();
   const router = useRouter();
   const searchParams = useSearchParams();
